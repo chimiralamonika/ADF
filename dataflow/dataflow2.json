@@ -1,0 +1,93 @@
+{
+	"name": "dataflow2",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "salesdatabase",
+						"type": "DatasetReference"
+					},
+					"name": "sourceSalesData"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "validtable",
+						"type": "DatasetReference"
+					},
+					"name": "validSALESdata"
+				},
+				{
+					"dataset": {
+						"referenceName": "invalidtable",
+						"type": "DatasetReference"
+					},
+					"name": "InvalidSalesData"
+				}
+			],
+			"transformations": [
+				{
+					"name": "ValidAndInvalidData"
+				},
+				{
+					"name": "derivedColumn1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          SalesDate as date 'dd-MM-yyyy',",
+				"          SalesMan as string,",
+				"          Item as string,",
+				"          Units as integer,",
+				"          Unit_price as double '000,000,000.000',",
+				"          Sale_amt as double '000,000,000.000'",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourceSalesData",
+				"sourceSalesData split(Units >0 && toDecimal(Unit_price) >= 0.0 && toDecimal(Sale_amt) >= 0.0 && !isNull(SalesMan) && !isNull(SalesDate) && !isNull(Item),",
+				"     disjoint: false) ~> ValidAndInvalidData@(ValidOutputStream, InValidOutputStream)",
+				"ValidAndInvalidData@InValidOutputStream derive(ErrorReason = iif(Units <= 0, 'Invalid Units',   iif(Unit_price < 0, 'Negative Price',     iif(isNull(SalesMan), 'Missing SalesMan',       iif(isNull(SalesDate), 'Missing SalesDate',         iif(isNull(Item), 'Missing Item', 'Unknown Error')))))) ~> derivedColumn1",
+				"ValidAndInvalidData@ValidOutputStream sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          SalesDate as date,",
+				"          SalesMan as string,",
+				"          Item as string,",
+				"          Units as integer,",
+				"          Unit_price as decimal(10,2),",
+				"          Sale_amt as decimal(10,2)",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> validSALESdata",
+				"derivedColumn1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          SalesDate as date,",
+				"          SalesMan as string,",
+				"          Item as string,",
+				"          Units as integer,",
+				"          Unit_price as decimal(10,2),",
+				"          Sale_amt as decimal(10,2)",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> InvalidSalesData"
+			]
+		}
+	}
+}
