@@ -1,0 +1,85 @@
+{
+	"name": "SourceDataset_gkn",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorage2",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "drivers_payment.csv",
+				"folderPath": "raw",
+				"container": "drivers-payment"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": [
+			{
+				"name": "DriverId",
+				"type": "String"
+			},
+			{
+				"name": "DriverName",
+				"type": "String"
+			},
+			{
+				"name": "DiverPhone",
+				"type": "String"
+			},
+			{
+				"name": "RideDate",
+				"type": "String"
+			},
+			{
+				"name": "RideCount",
+				"type": "String"
+			},
+			{
+				"name": "City",
+				"type": "String"
+			},
+			{
+				"name": "RideEarnings",
+				"type": "String"
+			},
+			{
+				"name": "PaymentDate",
+				"type": "String"
+			},
+			{
+				"name": "PaymentStatus",
+				"type": "String"
+			},
+			{
+				"name": "CustomersReview",
+				"type": "String"
+			},
+			{
+				"name": "CustomerRating",
+				"type": "String"
+			},
+			{
+				"name": "CreatedBy",
+				"type": "String"
+			},
+			{
+				"name": "CreatedAt",
+				"type": "String"
+			},
+			{
+				"name": "ModifiedAt",
+				"type": "String"
+			},
+			{
+				"name": "ModifiedBy",
+				"type": "String"
+			}
+		]
+	}
+}
